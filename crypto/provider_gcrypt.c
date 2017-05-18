@@ -477,7 +477,7 @@ int decrypt_aes128_gcm(guint8** plaintext,
 	gsize ciphertext_len)
 {
 	gcry_error_t err = 0;
-	gcry_cipher_hd_t handle;
+	gcry_cipher_hd_t handle = NULL;
 	guint8* plaint = NULL;
 	gsize plaint_len = 0;
 
@@ -508,12 +508,14 @@ int decrypt_aes128_gcm(guint8** plaintext,
 		goto cleanup;
 	}
 
-	gcry_cipher_close(handle);
 
 	*plaintext = plaint;
 	*plaintext_len = plaint_len;
 
 cleanup:
+	if (handle) {
+		gcry_cipher_close(handle);
+	}
 	if (err) {
 		purple_debug_error(PLUGIN_ID, "%s: %s\n", gcry_strsource(err), gcry_strerror(err));
 		if (plaint) g_free(plaint);
@@ -535,7 +537,7 @@ int encrypt_aes128_gcm(guint8** ciphertext,
 	gsize plaintext_len)
 {
 	gcry_error_t err = 0;
-	gcry_cipher_hd_t handle;
+	gcry_cipher_hd_t handle = NULL;
 	guint8* ciphert = NULL;
 	guint8* tg = NULL;
 	gsize ciphert_len = 0;
@@ -569,7 +571,6 @@ int encrypt_aes128_gcm(guint8** ciphertext,
 		goto cleanup;
 	}
 
-	gcry_cipher_close(handle);
 
 	*ciphertext = ciphert;
 	*ciphertext_len = ciphert_len;
@@ -577,6 +578,9 @@ int encrypt_aes128_gcm(guint8** ciphertext,
 	*tag_len = tg_len;
 
 cleanup:
+	if (handle) {
+		gcry_cipher_close(handle);
+	}
 	if (err) {
 		purple_debug_error(PLUGIN_ID, "%s: %s\n", gcry_strsource(err), gcry_strerror(err));
 		if (ciphert) g_free(ciphert);
