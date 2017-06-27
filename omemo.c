@@ -84,7 +84,7 @@ static gboolean plugin_load(PurplePlugin* plugin)
 	gboolean retval = TRUE;
 	PurplePlugin* jabber_plugin = NULL;
 	signal_crypto_provider provider = {
-		.random_func = random_generator,
+		.random_func = (int (*)(uint8_t*, size_t, void*))random_generator,
 		.hmac_sha256_init_func = hmac_sha256_init,
 		.hmac_sha256_update_func = hmac_sha256_update,
 		.hmac_sha256_final_func = hmac_sha256_final,
@@ -2382,14 +2382,13 @@ static void signal_unlock_func(void* user_data)
 
 gchar* rand_string(gsize len)
 {
-	guint8 r;
 	int i, rand_pos;
 	gchar* str = g_malloc(sizeof(gchar) * (len + 1));
 	const gchar charset[] = "abcdefghijklmnopqrstuvwxyz0123456789";
 
+	random_generator(str, sizeof(gchar) * len, NULL);
 	for (i = 0; i < len; i++) {
-		random_generator(&r, 1, NULL);
-		rand_pos = r % (int) (sizeof(charset) - 1);
+		rand_pos = (unsigned) str[i] % (sizeof(charset) - 1);
 		str[i] = charset[rand_pos];
 	}
 	str[len] = '\0';

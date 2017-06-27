@@ -32,7 +32,7 @@
  */
 int init_crypto_provider(void);
 
-int random_generator(uint8_t* data, size_t len, void* user_data);
+int random_generator(void* data, size_t len, void* user_data);
 
 int hmac_sha256_init(void** hmac_context, const uint8_t* key, size_t key_len, void* user_data);
 

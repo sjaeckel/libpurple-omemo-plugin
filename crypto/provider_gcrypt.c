@@ -35,7 +35,7 @@ int init_crypto_provider()
 	return 0;
 }
 
-int random_generator(uint8_t* data, size_t len, void* user_data)
+int random_generator(void* data, size_t len, void* user_data)
 {
 	gcry_randomize(data, len, GCRY_STRONG_RANDOM);
 
